@@ -21,10 +21,7 @@
         _bftn_util.bindIframeCommunicator(document.getElementById('_bftn_iframe'), this);
       },
       stop: function() {
-        var canClose = this.options['canClose'];
-        if (canClose !== false) {
-          _bftn_util.destroyIframe();
-        }
+        _bftn_util.destroyIframe();
       }
     }
   }

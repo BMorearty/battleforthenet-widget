@@ -44,43 +44,57 @@
   }
 
   function getTheme(theme) {
-    if (typeof theme == 'object') {
-      return theme;
-    }
+    var themeObj;
 
-    switch(theme) {
+    switch(typeof theme === 'string' ? theme : '') {
       case 'money':
-        return {
+        themeObj = {
           className: theme,
           logos: ['images/money.png'],
           headline: 'Please upgrade your plan to proceed.',
           body: 'Just kidding. You can still get to this site *for now*. But if the FCC ends net neutrality, your cable company could charge you extra fees just to use the websites and apps you want. We can stop them and keep the Internet open, fast, and awesome if we all contact the U.S. Congress and the FCC, but we only have a few days left.'
         };
+        break;
       case 'stop':
-        return {
+        themeObj = {
           className: theme,
           logos: ['images/stop.png'],
           headline: 'This site has been blocked by your ISP.',
           body: 'Well, not yet. But without net neutrality, cable companies could censor websites, favoring their own business partners. We can stop them and keep the Internet open, fast, and awesome if we all contact the U.S. Congress and the FCC, but we only have a few days left.'
         };
+        break;
       case 'slow':
-        return {
+        themeObj = {
           className: theme,
           logos: ['images/slow.png'],
           headline: 'Sorry, we\'re stuck in the slow lane.',
           body: 'Well, not yet. Cable companies want to get rid of net neutrality, so they can slow sites like ours to a crawl and shake us down for extra fees just to reach you. If they get their way, the Internet will never be the same. We can stop them and keep the web fast, open, and awesome if we all contact the U.S. Congress and the FCC, but we only have a few days left.'
         };
+        break;
+      case 'without':
       default:
-        return {
+        themeObj = {
           className: 'without',
           logos: ['images/slow.png', 'images/stop_gradient.png', 'images/money_gradient.png'],
           headline: 'This is the web without net neutrality.',
           body: 'Cable companies want to get rid of net neutrality. Without it, sites like ours could be censored, slowed down, or forced to charge extra fees. We can stop them and keep the Internet open, fast, and awesome if we all contact Congress and the FCC, but we only have a few days left.'
         };
+        break;
     }
+
+    if (typeof theme == 'object') {
+      var keys = Object.keys(theme);
+      var key;
+      for (var i = 0; i < keys.length; i++) {
+        key = keys[i];
+        themeObj[key] = theme[key];
+      }
+    }
+
+    return themeObj;
   }
 
-  function renderContent(theme, canClose) {
+  function renderContent(theme) {
     document.body.classList.add(theme.className);
 
     // Render logos
@@ -98,12 +112,6 @@
     // Render headline and body copy
     document.getElementById('headline').textContent = theme.headline;
     document.getElementById('content').innerText = theme.body;
-
-    // Optionally disallow closing; undefined is falsey but indicates the default, which is true.
-    if (canClose === false) {
-      var closeButton = document.getElementById('close');
-      closeButton.parentElement.removeChild(closeButton);
-    }
   }
 
   function renderOrgRotation(org) {
@@ -137,6 +145,19 @@
     if (org.donate) donate.setAttribute('href', org.donate);
   }
 
+  function addCloseListeners() {
+    // Add close button listener.
+    document.getElementById('close').addEventListener('mousedown', function(e) {
+      e.preventDefault();
+      sendMessage('stop');
+    });
+
+    document.getElementById('background').addEventListener('mousedown', function(e) {
+      // Ignore events that propagate up
+      if (e.target == document.getElementById('background')) sendMessage('stop');
+    });
+  }
+
   function sendMessage(requestType, data) {
     data || (data = {});
     data.requestType = requestType;
@@ -152,8 +173,14 @@
       init: function(options) {
         for (var k in options) this.options[k] = options[k];
 
-        renderContent(getTheme(this.options.theme), this.options.canClose);
+        renderContent(getTheme(this.options.theme));
         renderOrgRotation(getOrg(this.options.org));
+
+        if (this.options.uncloseable) {
+          document.getElementById('close').classList.add('hidden');
+        } else {
+          addCloseListeners();
+        }
 
         return this;
       },
@@ -298,17 +325,6 @@
 
     xhr.open(call.getAttribute('method'), call.getAttribute('action'), true);
     xhr.send(formData);
-  });
-
-  // Add close button listener.
-  document.getElementById('close').addEventListener('mousedown', function(e) {
-    e.preventDefault();
-    sendMessage('stop');
-  });
-
-  document.getElementById('background').addEventListener('mousedown', function(e) {
-    // Ignore events that propagate up
-    if (e.target == document.getElementById('background')) sendMessage('stop');
   });
 
   // Start animation
