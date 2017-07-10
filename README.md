@@ -44,7 +44,24 @@ you can pass some properties in to customize the default behavior.
      * default theme.
      */
     theme: 'slow',
-
+    
+    /*
+     * Or if you want your own custom theme, specify its properties here.
+     * Specify all four options: `className`, `logos`, `headline`, and `body`.
+     *
+     * className: 'money', 'stop', 'slow', or 'without'.
+     * logos: array that may include 'images/money.png', 'images/stop.png',
+     *   'images/slow.png', 'images/stop_gradient.png', 'images/money_gradient.png'.
+     * headline: your modal headline, as a string.
+     * body: your modal body, as a string.
+     */
+    theme: {
+      className: 'money',
+      logos: ['images/money.png', 'images/stop.png'],
+      headline: 'Your headline here.',
+      body: 'Your body here.'
+    },
+    
     /*
      * Choose from 'fp' for Free Press, 'dp' for Demand Progress or
      * 'fftf' for Fight for the Future. Omit this property to randomly split
@@ -52,20 +69,28 @@ you can pass some properties in to customize the default behavior.
      * coalition.
      */
     org: 'fftf',
-
+    
     /*
      * Specify a delay (in milliseconds) before showing the widget. Defaults to one 
      * second.
      */
     delay: 1000,
-
+    
     /*
      * Specify a date on which to display the widget. Defaults to July 12th, 2017 if 
      * omitted. ISO-8601 dates are UTC time, three-argument dates (with a zero-based
      * month) are local time.
      */
     date: new Date(2017, 6, 12),
-
+    
+    /*
+     * If you show the modal on your homepage, you should let users close it to access your.
+     * site. But if you launch a new tab to open the modal, closing the modal just leaves the
+     * user staring at a white page. Set this to false to prevent closing the modal.
+     * The user can close the tab to dismiss it. Defaults to true.
+     */
+    canClose: true,
+    
     /*
      * Always show the widget. Useful for testing.
      */

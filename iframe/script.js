@@ -44,6 +44,10 @@
   }
 
   function getTheme(theme) {
+    if (typeof theme == 'object') {
+      return theme;
+    }
+
     switch(theme) {
       case 'money':
         return {
@@ -76,7 +80,7 @@
     }
   }
 
-  function renderContent(theme) {
+  function renderContent(theme, canClose) {
     document.body.classList.add(theme.className);
 
     // Render logos
@@ -94,6 +98,12 @@
     // Render headline and body copy
     document.getElementById('headline').textContent = theme.headline;
     document.getElementById('content').innerText = theme.body;
+
+    // Optionally disallow closing; undefined is falsey but indicates the default, which is true.
+    if (canClose === false) {
+      var closeButton = document.getElementById('close');
+      closeButton.parentElement.removeChild(closeButton);
+    }
   }
 
   function renderOrgRotation(org) {
@@ -142,7 +152,7 @@
       init: function(options) {
         for (var k in options) this.options[k] = options[k];
 
-        renderContent(getTheme(this.options.theme));
+        renderContent(getTheme(this.options.theme), this.options.canClose);
         renderOrgRotation(getOrg(this.options.org));
 
         return this;
